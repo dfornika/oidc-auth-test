@@ -33,7 +33,8 @@
              :on-change (fn [e]
                           (let [value (-> e .-target .-value)]
                             (-> (.-sessionStorage js/window)
-                                (.setItem "provider_url" value))))}]]
+                                (.setItem "provider_url" value))
+                            (swap! db assoc-in [:oidc-config :provider-url] value)))}]]
    [:div {:class "form-group"}
     [:label {:for :client-id} "Client ID"]
     [:input {:name :client-id :class "form-control" :type "text"
@@ -41,7 +42,8 @@
              :on-change (fn [e]
                           (let [value (-> e .-target .-value)]
                             (-> (.-sessionStorage js/window)
-                                (.setItem "client_id" value))))}]]
+                                (.setItem "client_id" value))
+                            (swap! db assoc-in [:oidc-config :client-id] value)))}]]
    [:div {:class "form-group"}
     [:label {:for :client-secret} "Client Secret"]
     [:input {:name :client-secret :class "form-control" :type "text"
@@ -49,14 +51,15 @@
              :on-change (fn [e]
                           (let [value (-> e .-target .-value)]
                             (-> (.-sessionStorage js/window)
-                                (.setItem "client_secret" value))))}]]
+                                (.setItem "client_secret" value))
+                            (swap! db assoc-in [:oidc-config :client-secret] value)))}]]
    [:a {:class "btn btn-primary"
         :href (str (str/join "/" [(-> (.-sessionStorage js/window)
                                       (.getItem "provider_url")) "oauth" "authorize"])
                    "?response_type=code"
                    "&client_id=" (-> (.-sessionStorage js/window)
                                      (.getItem "client_id"))
-                   "&scope=openid"
+                   "&scope=openid read_api"
                    "&redirect_uri=http://localhost:8080/oauth-callback")}
     "Login"]])
 
