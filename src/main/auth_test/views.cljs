@@ -25,43 +25,52 @@
 (defn login-form
   ""
   []
-  [:form {:style {:width "36rem"}}
-   [:div {:class "form-group"}
-    [:label {:for :oidc-provider-url} "OIDC Provider URL"]
-    [:input {:name :oidc-provier-url :class "form-control" :type "text"
-             :value (get-in @db [:oidc-config :provider-url])
-             :on-change (fn [e]
-                          (let [value (-> e .-target .-value)]
-                            (-> (.-sessionStorage js/window)
-                                (.setItem "provider_url" value))
-                            (swap! db assoc-in [:oidc-config :provider-url] value)))}]]
-   [:div {:class "form-group"}
-    [:label {:for :client-id} "Client ID"]
-    [:input {:name :client-id :class "form-control" :type "text"
-             :value (get-in @db [:oidc-config :client-id])
-             :on-change (fn [e]
-                          (let [value (-> e .-target .-value)]
-                            (-> (.-sessionStorage js/window)
-                                (.setItem "client_id" value))
-                            (swap! db assoc-in [:oidc-config :client-id] value)))}]]
-   [:div {:class "form-group"}
-    [:label {:for :client-secret} "Client Secret"]
-    [:input {:name :client-secret :class "form-control" :type "text"
-             :value (get-in @db [:oidc-config :client-secret])
-             :on-change (fn [e]
-                          (let [value (-> e .-target .-value)]
-                            (-> (.-sessionStorage js/window)
-                                (.setItem "client_secret" value))
-                            (swap! db assoc-in [:oidc-config :client-secret] value)))}]]
-   [:a {:class "btn btn-primary"
-        :href (str (str/join "/" [(-> (.-sessionStorage js/window)
-                                      (.getItem "provider_url")) "oauth" "authorize"])
-                   "?response_type=code"
-                   "&client_id=" (-> (.-sessionStorage js/window)
-                                     (.getItem "client_id"))
-                   "&scope=openid read_api"
-                   "&redirect_uri=http://localhost:8080/oauth-callback")}
-    "Login"]])
+  [:div {:class "border border-primary rounded"}
+   [:form {:class "form-vertical" :style {:width "36rem"}}
+    [:div {:class "form-group" :style {:margin "10px"}}
+     [:label {:for :oidc-provider-url} "OIDC Authorization Endpoint URL"]
+     [:input {:name :oidc-provier-url :class "form-control" :type "text"
+              :value (get-in @db [:oidc-config :authorization-endpoint])
+              :on-change (fn [e]
+                           (let [value (-> e .-target .-value)]
+                             (-> (.-sessionStorage js/window)
+                                 (.setItem "oidc_authorization_endpoint" value))
+                             (swap! db assoc-in [:oidc-config :authorization-endpoint] value)))}]]
+    [:div {:class "form-group" :style {:margin "10px"}}
+     [:label {:for :client-id} "Client ID"]
+     [:input {:name :client-id :class "form-control" :type "text"
+              :value (get-in @db [:oidc-config :client-id])
+              :on-change (fn [e]
+                           (let [value (-> e .-target .-value)]
+                             (-> (.-sessionStorage js/window)
+                                 (.setItem "oidc_client_id" value))
+                             (swap! db assoc-in [:oidc-config :client-id] value)))}]]
+    [:div {:class "form-group" :style {:margin "10px"}}
+     [:label {:for :client-secret} "Client Secret"]
+     [:input {:name :client-secret :class "form-control" :type "text"
+              :value (get-in @db [:oidc-config :client-secret])
+              :on-change (fn [e]
+                           (let [value (-> e .-target .-value)]
+                             (-> (.-sessionStorage js/window)
+                                 (.setItem "oidc_client_secret" value))
+                             (swap! db assoc-in [:oidc-config :client-secret] value)))}]]
+    [:div {:class "form-group" :style {:margin "10px"}}
+     [:label {:for :oidc-provider-url} "Scopes"]
+     [:input {:name :oidc-provier-url :class "form-control" :type "text"
+              :value (get-in @db [:oidc-config :scope])
+              :on-change (fn [e]
+                           (let [value (-> e .-target .-value)]
+                             (-> (.-sessionStorage js/window)
+                                 (.setItem "oidc_scope" value))
+                             (swap! db assoc-in [:oidc-config :scope] value)))}]]
+    [:a {:class "btn btn-primary"
+         :style {:margin "10px"}
+         :href (str (get-in @db [:oidc-config :authorization-endpoint])
+                    "/?response_type=code"
+                    "&client_id=" (get-in @db [:oidc-config :client-id])
+                    "&scope=" "openid"
+                    "&redirect_uri=http://localhost:8081/oauth-callback")}
+     "Login"]]])
 
 (defn login
   ""
